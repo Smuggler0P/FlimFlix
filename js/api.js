@@ -1,6 +1,6 @@
 "use strict";
 
-const api_key = "c8791f6c93c159762deebcdf18bc2d32";
+const api_key = "/*your api key from tmdb side*/";
 const imageBaseURL = "https://image.tmdb.org/t/p/";
 
 const fetchDataFromServer = function (url, callback, optionalParam) {
