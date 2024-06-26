@@ -3,6 +3,7 @@
 import { sidebar } from "./sidebar.js";
 import { api_key, imageBaseURL, fetchDataFromServer } from "./api.js";
 import { createMovieCard } from "./movie-card.js";
+import { search } from "./search.js";
 
 const pageContent = document.querySelector("[page-content]");
 
@@ -14,7 +15,7 @@ const homePageSections = [
     path: "/movie/upcoming",
   },
   {
-    title: "Today's Trending Movies",
+    title: "Weekly Trending Movies",
     path: "/trending/movie/week",
   },
   {
@@ -93,10 +94,11 @@ const heroBanner = function ({ results: movieList }) {
         <p class="genre">${genreList.asString(genre_ids)}</p>
         <p class="banner-text">${overview}</p>
 
-        <a href="./detail.html" class="btn">
+        <a href="./detail.html" class="btn" onclick="getMovieDetail(${id})">
           <img
             src="./images/play_circle.png"
             width="24"
+            aria-hidden="true"
             height="24"
             alt="play circle"
           />
@@ -130,7 +132,7 @@ const heroBanner = function ({ results: movieList }) {
 
   for (const { title, path } of homePageSections) {
     fetchDataFromServer(
-      `https://api.themoviedb.org/3/movie/popular?api_key=${api_key}&page=1`,
+      `https://api.themoviedb.org/3${path}?api_key=${api_key}`,
       createMovieList,
       title
     );
@@ -158,7 +160,7 @@ const addHeroSlide = function () {
     this.classList.add("active");
 
     lastSliderItem = sliderItems[Number(this.getAttribute("slider-control"))];
-    letlastSliderControl = this;
+    lastSliderControl = this;
   };
 
   addEventOnElements(sliderControls, "click", sliderStart);
@@ -169,45 +171,22 @@ const createMovieList = function ({ results: movieList }, title) {
   movieListElem.classList.add("movie-list");
   movieListElem.ariaLabel = `${title}`;
 
-  movieListElem.innerHTML = html`
+  movieListElem.innerHTML = `
     <div class="title-wrapper">
       <h3 class="title-large">${title}</h3>
     </div>
     <div class="slider-list">
-      <div class="slider-inner">
-        <div class="movie-card">
-          <figure class="poster-box card-banner">
-            <img
-              src="./images/slider-control.jpg"
-              alt="Puss in Boots: The Last Wish"
-              class="img-cover"
-            />
-          </figure>
-          <h4 class="title">Puss in Boots: The Last Wish</h4>
-          <div class="meta-list">
-            <div class="meta-item">
-              <img
-                src="./images/star.png"
-                width="20"
-                height="20"
-                loading="lazy"
-                alt="rating"
-              />
-              <span class="span">8.4</span>
-            </div>
-            <div class="card-badge">2022</div>
-          </div>
-          <a
-            href="./detail.html"
-            class="card-btn"
-            title="Puss in Boots: The Last Wish"
-          ></a>
-        </div>
-      </div>
+      <div class="slider-inner"></div>
     </div>
   `;
 
   for (const movie of movieList) {
     const movieCard = createMovieCard(movie);
+
+    movieListElem.querySelector(".slider-inner").appendChild(movieCard);
   }
+
+  pageContent.appendChild(movieListElem);
 };
+
+search();
